@@ -7,10 +7,16 @@ public class Book {
     private boolean isAvailable;
 
     public Book(String title, String author, String isbn, boolean isAvailable){
-        this.title = title;
-        this.author = author;
+//        this.title = title;  This validation was added to the constructor because the values were added directly inside the constructor.
+//        this.author = author;
+//        this.isbn = isbn;
+//        this.isAvailable = isAvailable;
+        setTitle(title);
+        setAuthor(author);
         this.isbn = isbn;
         this.isAvailable = isAvailable;
+
+
     }
 
     public String getAuthor() {
@@ -30,10 +36,18 @@ public class Book {
     }
 
     public void setTitle(String title){
+        if (title == null || title.trim().isEmpty()){
+            System.out.println("Title cannot be empty.");
+            return;
+        }
         this.title = title;
     }
 
     public void setAuthor(String author) {
+        if (author == null || author.trim().isEmpty()){
+            System.out.println("Author cannot be empty.");
+            return;
+        }
         this.author = author;
     }
 
