@@ -8,80 +8,159 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Scanner input = new Scanner(System.in);
-        ArrayList<Book> bookList = new ArrayList<>(); // creates an Array of emptyList
+        Scanner execution = new Scanner(System.in);
+        // ArrayList<Book> bookList = new ArrayList<>(); // creates an Array of emptyList
+
+        Library lab = new Library();
+
+        Admin ad = new Admin("admin", 1);
+        Member meb = new Member("member", 2);
 
 
-        while (true) { // Asking a user repeatedly how many books to add.
-            System.out.println("Title:"); //
-            String title = input.nextLine();
-
-            System.out.println("Author:");
-            String auth = input.nextLine();
-
-            System.out.println("ISBN: ");
-            String isbn = input.nextLine();
+        while (true) {
+            System.out.println("Who are you? (Admin/Member/Exit):");
+            String role = execution.nextLine().trim().toLowerCase();
 
 
-
-            Book newBook = new Book(title, auth, isbn, true);
-            if (newBook.getTitle() != null && newBook.getAuthor() != null) {
-                bookList.add(newBook);
-                System.out.println("Book added. ");
-            } else {
-                System.out.println("Book not added due to invalid data.");
+            if (role.equals("exit")) {
+                break;
             }
 
-            System.out.println("Do you want to add another book?(yes/no): ");
-            String respond = input.nextLine().trim().toLowerCase();
-            if (!respond.equals("yes")) break;
+            if (role.equals("admin")) {
+
+                System.out.println("Add or Remove a book? (add/remove):");
+                String adminAction = execution.nextLine().trim().toLowerCase();
 
 
-        }
+                System.out.println("Enter book title: ");
+                String title = execution.nextLine();
 
-        while (true){
-            System.out.println("Do you want to borrow or return a book? (borrow/return/exit):");
-            String books = input.nextLine().trim().toLowerCase();
+                System.out.println("Enter book author: ");
+                String auth = execution.nextLine();
 
-            if (books.equals("exit")) break;
+                System.out.println("Enter book isbn: ");
+                String isbn = execution.nextLine();
 
-            System.out.println("Enter the book title");
-            String theTitle = input.nextLine();
+                Book bk = new Book(title, auth, isbn, true);
 
-            boolean bookFound = false;
+                if (bk.getTitle() != null && bk.getAuthor() != null) {
 
-            for (Book book : bookList){
-                if (book.getTitle().equalsIgnoreCase(theTitle)){
-                    bookFound = true;
-                    if (books.equals("borrow")){
-                        book.borrowBook();
-                    } else if(books.equals("return")){
-                        book.returnBook();
+                    if (adminAction.equals("add")) {
+                        ad.addBook(bk, lab);
+                    } else if (adminAction.equals("remove")) {
+                        ad.removeBook(bk, lab);
                     } else {
-                        System.out.println("Invalid Action");
+                        System.out.println("Invalid admin action. ");
                     }
-                    break;
+                } else {
+                    System.out.println("Book not added due to invalid data.");
                 }
 
+
+                } else if (role.equals("member")) {
+                    System.out.println("Borrow or Return a book? (borrow/return): ");
+                    String memberAction = execution.nextLine().trim().toLowerCase();
+
+                    System.out.println("Enter book title: ");
+                    String title1 = execution.nextLine();
+
+
+
+                    if (memberAction.equals("borrow")) {
+                        meb.borrowBook(title1, lab);
+                    } else if (memberAction.equals("return")) {
+                        meb.returnBook(title1, lab);
+                    } else {
+                        System.out.println("Invalid member action.");
+                    }
+
+                } else {
+                    System.out.println("Invalid role.");
+                }
+
+                System.out.println("\n Current Books Library: ");
+                lab.displayAllBooks();
+
             }
-            if (!bookFound){
-                System.out.println("Book titled '" + theTitle + "' not found." );
-            }
 
+            execution.close();
+            System.out.println("Program exited");
         }
-
-        System.out.println("Current Library:");
-
-        for (Book book : bookList) {
-            System.out.println(book.displayInfo());
-            //book.displayInfo();
-            System.out.println("-----------");
-        }
-        input.close();
-
     }
 
-}
 
+
+//        while (true) { // Asking a user repeatedly how many books to add.
+//            System.out.println("Title:"); //
+//            String title = execution.nextLine();
+//
+//            System.out.println("Author:");
+//            String auth = execution.nextLine();
+//
+//            System.out.println("ISBN: ");
+//            String isbn = execution.nextLine();
+//
+
+//
+//            Book newBook = new Book(title, auth, isbn, true);
+//            if (newBook.getTitle() != null && newBook.getAuthor() != null) {
+//                execution.add(newBook);
+//                System.out.println("Book added. ");
+//            } else {
+//                System.out.println("Book not added due to invalid data.");
+//            }
+//
+//            System.out.println("Do you want to add another book?(yes/no): ");
+//            String response = execution.nextLine().trim().toLowerCase();
+//            if (!response.equals("yes")) break;
+//
+//        }
+//
+//        while (true){
+//            System.out.println("Do you want to borrow or return a book? (borrow/return/exit):");
+//            String books = execution.nextLine().trim().toLowerCase();
+//
+//            if (books.equals("exit")) break;
+//
+//            System.out.println("Enter the book title");
+//            String theTitle = execution.nextLine();
+//
+//            boolean bookFound = false;
+//
+//            for (Book book : bookList){
+//                if (book.getTitle().equalsIgnoreCase(theTitle)){
+//                    bookFound = true;
+//                    if (books.equals("borrow")){
+//                        book.borrowBook();
+//                    } else if(books.equals("return")){
+//                        book.returnBook();
+//                    } else {
+//                        System.out.println("Invalid Action");
+//                    }
+//                    break;
+//                }
+//
+//            }
+//            if (!bookFound){
+//                System.out.println("Book titled '" + theTitle + "' not found." );
+//            }
+//
+//        }
+//
+//        System.out.println("Current Library:");
+//
+//        for (Book book : bookList) {
+//            System.out.println(book.displayInfo());
+//            //book.displayInfo();
+//            System.out.println("-----------");
+//        }
+//        execution.close();
+//
+//    }
+//
+//}
+//
+//            }
+//
 
 

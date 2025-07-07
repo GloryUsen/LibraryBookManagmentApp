@@ -1,85 +1,85 @@
 package com.glory;
 
 public class Book {
-    private String title;
-    private String author;
-    private String isbn;
-    private boolean isAvailable;
+    private String bookTitle;
+    private String bookAuthor;
+    private String bookIsbn;
+    private boolean bookIsAvailable;
 
     public Book(String title, String author, String isbn, boolean isAvailable){
 //        this.title = title;  This validation was added to the constructor because the values were added directly inside the constructor.
 //        this.author = author;
 //        this.isbn = isbn;
 //        this.isAvailable = isAvailable;
-        setTitle(title);
-        setAuthor(author);
-        this.isbn = isbn;
-        this.isAvailable = isAvailable;
+        setBookTitle(title);
+        setBookAuthor(author);
+        this.bookIsbn = isbn;
+        this.bookIsAvailable = isAvailable;
 
 
     }
 
     public String getAuthor() {
-        return author;
+        return bookAuthor;
     }
 
     public String getTitle(){
-        return title;
+        return bookTitle;
     }
 
     public String getIsbn(){
-        return isbn;
+        return bookIsbn;
     }
 
     public Boolean getIsAvailable(){
-        return isAvailable;
+        return bookIsAvailable;
     }
 
-    public void setTitle(String title){
+    public void setBookTitle(String title){
         if (title == null || title.trim().isEmpty()){
             System.out.println("Title cannot be empty.");
             return;
         }
-        this.title = title;
+        this.bookTitle = title;
     }
 
-    public void setAuthor(String author) {
+    public void setBookAuthor(String author) {
         if (author == null || author.trim().isEmpty()){
             System.out.println("Author cannot be empty.");
             return;
         }
-        this.author = author;
+        this.bookAuthor = author;
     }
 
     public void setIsbn(String isbn){
-        this.isbn = isbn;
+        this.bookIsbn = isbn;
     }
 
     public void setAvailable(boolean isAvailable){
-        this.isAvailable = isAvailable;
+        this.bookIsAvailable = isAvailable;
     }
 
     public void borrowBook(){
-        if (isAvailable){
-            System.out.println("You have successfully borrowed the book titled: "+ title);
-            isAvailable = false;
+        if (bookIsAvailable){
+            System.out.println("You have successfully borrowed the book titled: "+ bookTitle);
+            bookIsAvailable = false;
         } else {
-            System.out.println(title + " is already borrowed! Check back later");
+            System.out.println(bookTitle + " is already borrowed! Check back later");
         }
 
     }
     public void returnBook(){
-        if (!isAvailable){
-            System.out.println("You have successfully returned the book: "+ title );
-            isAvailable = true;
+        if (!bookIsAvailable){
+            System.out.println("You have successfully returned the book: "+ bookTitle );
+            bookIsAvailable = true;
         } else {
-            System.out.println(title + " was not borrowed");
+            System.out.println(bookTitle + " was not borrowed");
         }
     }
 
     public String displayInfo(){
-        return "Title: " + title + "\nAuthor: " + author + "\nISBN: " +
-                isbn + "\nAvailable: " + isAvailable;
+        return "Title: " + bookTitle + "\nAuthor: " + bookAuthor + "\nISBN: " +
+                bookIsbn + "\nAvailable: " + bookIsAvailable;
     }
 
 }
