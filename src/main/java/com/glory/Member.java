@@ -5,32 +5,44 @@ import java.util.List;
 
 public class Member extends BaseUser{
 
-    private List<Book> borrowedBooks;
+   // private List<Book> borrowedBooks;
 
     public Member(String usernames, int userId) {
         super(usernames, userId);
-        borrowedBooks = new ArrayList<>();
+       // borrowedBooks = new ArrayList<>();
     }
 
-    public void borrowBook(String title, Library lib){
-        Book bbs = lib.findBookByTitle(title);
+//    public void borrowBook(String title, Library lib){
+//        Book bbs = lib.findBookByTitle(title);
+//        if (bbs != null && bbs.getIsAvailable()){
+//            borrowedBooks.add(bbs);
+//            bbs.borrowBook();
+//        } else {
+//            System.out.println("Book not available or not found.");
+//        }
+
+    public void borrowBook(String title, Library lab){
+        Book bbs = lab.findBookByTitle(title);
         if (bbs != null && bbs.getIsAvailable()){
-            borrowedBooks.add(bbs);
+            lab.recordOfBooksBorrowed(this, bbs);
+           // bbs.returnBook();
             bbs.borrowBook();
         } else {
-            System.out.println("Book not available or not found.");
+            System.out.println("Book not found.");
         }
     }
 
-    public void returnBook(String title, Library lib){
-        for (Book bbs : borrowedBooks){
-            if (bbs.getTitle().equalsIgnoreCase(title)){
-                bbs.returnBook();
-                borrowedBooks.remove(bbs);
-                return;
-            }
-        }
+    public void returnBook(String title, Library lib) {
+        Book bbs = lib.findBookByTitle(title);
 
-        System.out.println("You don't have this book. ");
+        if (bbs != null) {
+            lib.recordOfBooksReturned(this, bbs);
+
+            bbs.returnBook();
+
+        } else {
+
+            System.out.println("You don't have this book. ");
+        }
     }
 }

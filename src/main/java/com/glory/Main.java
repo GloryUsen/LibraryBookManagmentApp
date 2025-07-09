@@ -1,8 +1,6 @@
 package com.glory;
 
 
-import java.util.ArrayList;
-
 import java.util.Scanner;
 
 public class Main {
@@ -12,9 +10,8 @@ public class Main {
         // ArrayList<Book> bookList = new ArrayList<>(); // creates an Array of emptyList
 
         Library lab = new Library();
-
-        Admin ad = new Admin("admin", 1);
-        Member meb = new Member("member", 2);
+        Admin admin = new Admin("Sarah:", 1);
+        Member member = new Member("John:", 2);
 
 
         while (true) {
@@ -27,7 +24,6 @@ public class Main {
             }
 
             if (role.equals("admin")) {
-
                 System.out.println("Add or Remove a book? (add/remove):");
                 String adminAction = execution.nextLine().trim().toLowerCase();
 
@@ -43,12 +39,11 @@ public class Main {
 
                 Book bk = new Book(title, auth, isbn, true);
 
-                if (bk.getTitle() != null && bk.getAuthor() != null) {
-
-                    if (adminAction.equals("add")) {
-                        ad.addBook(bk, lab);
-                    } else if (adminAction.equals("remove")) {
-                        ad.removeBook(bk, lab);
+                if (bk.getTitle() != null && bk.getAuthor() != null && bk.getIsbn() != null) {
+                    if (adminAction.equalsIgnoreCase("add")) {
+                        admin.addBook(bk, lab);
+                    } else if (adminAction.equalsIgnoreCase("remove")){
+                        admin.removeBook(bk, lab);
                     } else {
                         System.out.println("Invalid admin action. ");
                     }
@@ -58,18 +53,23 @@ public class Main {
 
 
                 } else if (role.equals("member")) {
-                    System.out.println("Borrow or Return a book? (borrow/return): ");
+                    System.out.println("Borrow, Return or View borrowed books ? (borrow/return/view): ");
                     String memberAction = execution.nextLine().trim().toLowerCase();
+
+                    if (memberAction.equalsIgnoreCase("view")){
+                        lab.viewBorrowedBooks(member);
+                        return;
+                    }
 
                     System.out.println("Enter book title: ");
                     String title1 = execution.nextLine();
 
 
 
-                    if (memberAction.equals("borrow")) {
-                        meb.borrowBook(title1, lab);
+                    if (memberAction.equalsIgnoreCase("borrow")) {
+                        member.borrowBook(title1, lab);
                     } else if (memberAction.equals("return")) {
-                        meb.returnBook(title1, lab);
+                        member.returnBook(title1, lab);
                     } else {
                         System.out.println("Invalid member action.");
                     }
