@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class Library {
     private List<Book> listOfBooks = new ArrayList<>();
-    private Map<Member, List<Book>> borrowedBookHistory;
+    private Map<Member, List<Book>> borrowedBookHistory = new HashMap<>();
+    // this new hashMap<>(); shows that no member has borrowed anything yet.
 
     public Library(){
         borrowedBookHistory = new HashMap<>(); // what is this line doing exactly?
@@ -40,23 +41,22 @@ public class Library {
         }
     }
 
-    public void recordOfBooksBorrowed (Member mem, Book buk) {
+    public void BorrowedBookRecord (Member mem, Book buk) {
         borrowedBookHistory.computeIfAbsent(mem, placeHolder -> new ArrayList<>()).add(buk);
         System.out.println(mem.name + " borrowed " + buk.getTitle());
     }
 
-    public void recordOfBooksReturned(Member member, Book books){
-        List<Book> book1 = borrowedBookHistory.get(member);
-        if (book1 != null){
-            book1.remove(books);
-            System.out.println(member.name + " return " + books.getTitle());
+    public void ReturnBookRecord(Member member, Book books){
+        List<Book> borrowedBooks = borrowedBookHistory.get(member);
+        if (borrowedBooks != null){
+            borrowedBooks.remove(books);
+            System.out.println(member.name + " returned " + books.getTitle());
         }
     }
 
     public void viewBorrowedBooks(Member member){
         List<Book> books = borrowedBookHistory.get(member);
-        System.out.println("Borrowed books from " + member.name + " ; ");
-        if (books != null && !books.isEmpty()){
+        System.out.println("Borrowed books from " + member.name + ";");if (books != null && !books.isEmpty()){
             for (Book b : books){
                 System.out.println("- " + b.getTitle());
             }

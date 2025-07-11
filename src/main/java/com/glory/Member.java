@@ -24,7 +24,7 @@ public class Member extends BaseUser{
     public void borrowBook(String title, Library lab){
         Book bbs = lab.findBookByTitle(title);
         if (bbs != null && bbs.getIsAvailable()){
-            lab.recordOfBooksBorrowed(this, bbs);
+            lab.BorrowedBookRecord(this, bbs);
            // bbs.returnBook();
             bbs.borrowBook();
         } else {
@@ -36,7 +36,7 @@ public class Member extends BaseUser{
         Book bbs = lib.findBookByTitle(title);
 
         if (bbs != null) {
-            lib.recordOfBooksReturned(this, bbs);
+            lib.ReturnBookRecord(this, bbs);
 
             bbs.returnBook();
 

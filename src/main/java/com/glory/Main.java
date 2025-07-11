@@ -53,7 +53,7 @@ public class Main {
 
 
                 } else if (role.equals("member")) {
-                    System.out.println("Borrow, Return or View borrowed books ? (borrow/return/view): ");
+                    System.out.println("Borrow, Return or View borrowed books? (borrow/return/view): ");
                     String memberAction = execution.nextLine().trim().toLowerCase();
 
                     if (memberAction.equalsIgnoreCase("view")){
