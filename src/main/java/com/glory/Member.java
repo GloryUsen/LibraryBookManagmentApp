@@ -1,48 +1,48 @@
 package com.glory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class Member extends BaseUser{
 
-   // private List<Book> borrowedBooks;
-
     public Member(String usernames, int userId) {
         super(usernames, userId);
-       // borrowedBooks = new ArrayList<>();
     }
-
-//    public void borrowBook(String title, Library lib){
-//        Book bbs = lib.findBookByTitle(title);
-//        if (bbs != null && bbs.getIsAvailable()){
-//            borrowedBooks.add(bbs);
-//            bbs.borrowBook();
-//        } else {
-//            System.out.println("Book not available or not found.");
-//        }
 
     public void borrowBook(String title, Library lab){
-        Book bbs = lab.findBookByTitle(title);
-        if (bbs != null && bbs.getIsAvailable()){
-            lab.BorrowedBookRecord(this, bbs);
-           // bbs.returnBook();
-            bbs.borrowBook();
+        Book books = lab.findBookByTitle(title);
+        if (books != null && books.getIsAvailable()){
+            lab.recordBorrowedBook(this, books);
+            books.borrowBook();
         } else {
-            System.out.println("Book not found.");
+            System.out.println("Book not found or already borrowed.");
         }
     }
 
-    public void returnBook(String title, Library lib) {
-        Book bbs = lib.findBookByTitle(title);
 
-        if (bbs != null) {
-            lib.ReturnBookRecord(this, bbs);
+    public void returnBook(String title, Library keeper) {
+        Book book = keeper.findBookByTitle(title);
 
-            bbs.returnBook();
-
+        if (book != null) {
+            keeper.recordReturnedBook(this, book);
+            book.returnBook();
         } else {
-
-            System.out.println("You don't have this book. ");
+            System.out.println(" Book not found. ");
         }
+    }
+
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass())  return false;
+        Member aMember = (Member) obj;
+        return id == aMember.id && name.equalsIgnoreCase(aMember.name);
+    }
+
+        @Override
+        public int hashCode () {
+            return Objects.hash(name.toLowerCase(), id);
+
     }
 }

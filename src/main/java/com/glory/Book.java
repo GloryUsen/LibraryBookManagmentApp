@@ -7,10 +7,6 @@ public class Book {
     private boolean bookIsAvailable;
 
     public Book(String title, String author, String isbn, boolean isAvailable){
-//        this.title = title;  // This validation was added to the constructor because the values were added directly inside the constructor.
-//        this.author = author;
-//        this.isbn = isbn;
-//        this.isAvailable = isAvailable;
         setBookTitle(title);
         setBookAuthor(author);
         this.bookIsbn = isbn;
