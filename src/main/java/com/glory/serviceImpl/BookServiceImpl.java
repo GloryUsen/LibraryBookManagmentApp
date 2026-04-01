@@ -1,48 +1,144 @@
 package com.glory.serviceImpl;
 
-import org.modelmapper.ModelMapper;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
+import com.glory.dto.BookDto;
+import com.glory.dto.CategoryDto;
 import com.glory.entity.Book;
-import com.glory.entity.Role;
-import com.glory.entity.User;
-import com.glory.enums.BookStatus;
+import com.glory.entity.Category;
+import com.glory.exception.ResourceNotFoundException;
 import com.glory.repository.BookRepository;
+import com.glory.repository.CategoryRepository;
 import com.glory.service.BookService;
 
 @Service
+public class BookServiceImpl implements BookService{
 
-public class BookServiceImpl implements BookService {
+    private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
 
-    private BookRepository bookRepository;
-    private ModelMapper modelMapper;
-    
-    public BookerviceImpl(BookRepository bookRepository, ModelMapper modelMapper){
 
+    public BookServiceImpl(BookRepository bookRepository, CategoryRepository categoryRepository) {
         this.bookRepository = bookRepository;
-        this.modelMapper = modelMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public Book addBook(User user, Book book) {
-        if(user.getRole() != Role.ADMIN){
+    public BookDto addBook(BookDto bookDto) {
+    Book book = mapBookDtoToEntity(bookDto);
+    Book savedBook = bookRepository.save(book);
 
-        throw new ForbiddenException("Only Adim can add books");// can i replac ResourceNotFoundException here?
+    return mapBookEntityToDto(savedBook);
 
+
+    }
+
+
+    private BookDto mapDtoToEntity1(BookDto dto){
+
+        Book book = new Book();
+
+        book.setTitle(dto.getTitle());
+        book.setAuthor(dto.getAuthor());
+        book.setIsbn(dto.getIsbn());
+        book.setAvailable(dto.isAvailable());
+        book.setStatus(dto.getStatus());
+
+        if(dto.getCategory() != null){
+            Category category = categoryRepository.findById(dto.getCategory().getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+            book.setCategory(category);
         }
 
-       BookValidator.validate(book);
+        return dto;
+}
 
-       Optional<Book> existingBook = bookRepository
-       .findByTitleAndAUthorAndIsbn(book.getTitle(), book.getAuthor(), book.getIsbn());
+        private Book mapBookDtoToEntity(BookDto dto){
 
-       if(existingBook.isPresent()) {
-        throw new DuplicateBookException(
-            String.format("Book already exists: %s by %s (ISBN: %s)",
-            book.getTitle(), book.getAuthor(), book.getIsbn()));
+            Book book = new Book();
+
+            book.setTitle(dto.getTitle());
+            book.setAuthor(dto.getAuthor());
+            book.setIsbn(dto.getIsbn());
+            book.setAvailable(dto.isAvailable());
+            book.setStatus(dto.getStatus());
+
+            if(dto.getCategory() != null){
+                Category category = categoryRepository.findById(dto.getCategory().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+
+                book.setCategory(category);
+            }
+
+            return book;
+        }
+
+
+
+
+
+    @Override
+    public List<BookDto> getAllBooks() {
+
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+          .map(this::mapBookEntityToDto)
+          .collect(Collectors.toList());
     }
-    book.setStatus(BookStatus.AVAILABLE);
-    return bookRepository.save(book);
-}
+
+    
+
+        private Book mapDtoToEntity(BookDto dto){
+
+            Book books = new Book();
+
+            books.setId(dto.getId());
+            books.setTitle(dto.getTitle());
+            books.setAuthor(dto.getAuthor());
+            books.setIsbn(dto.getIsbn());
+            books.setAvailable(dto.isAvailable());
+            books.setStatus(dto.getStatus());
+
+
+            if(dto.getCategory() != null){
+                Category category = categoryRepository.findById(dto.getCategory().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+
+                books.setCategory(category);
+
+            }
+
+            return books;
+
+    }
+
+
+
+
+        private BookDto mapBookEntityToDto(Book book){
+
+        BookDto dto = new BookDto();
+
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setAuthor(book.getAuthor());
+        dto.setIsbn(book.getIsbn());
+        dto.setAvailable(book.isAvailable());
+        dto.setStatus(book.getStatus());
+
+        if(book.getCategory() != null){
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setId(book.getCategory().getId());
+            categoryDto.setName(book.getCategory().getName());
+            dto.setCategory(categoryDto);
+        }
+
+        return dto;
+    }
+
 
 }
+

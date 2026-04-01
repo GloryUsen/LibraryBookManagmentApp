@@ -1,9 +1,13 @@
 package com.glory.service;
 
-import com.glory.entity.Book;
-import com.glory.entity.User;
+import java.util.List;
+
+import com.glory.dto.BookDto;
 
 public interface BookService {
-    Book addBook(User user, Book book);
+
+    BookDto addBook (BookDto book); 
+
+    List<BookDto> getAllBooks();
 
 }

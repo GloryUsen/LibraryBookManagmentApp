@@ -18,8 +18,8 @@ public class ForbiddenException extends RuntimeException{
     private String action;
     private String resource;
 
-    public DuplicateBookException(String action, String resource){
-        super(String.format("You are not allow to %s this %s", action, resource));
+    public void DuplicateBookException(String action, String resource){
+        //super(String.format("You are not allow to %s this %s", action, resource));
         this.action = action;
         this.resource = resource;
     }

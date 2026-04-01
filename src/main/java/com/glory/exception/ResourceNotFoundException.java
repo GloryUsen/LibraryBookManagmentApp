@@ -1,10 +1,10 @@
 package com.glory.exception;
-import com.glory.exception.ResourceNotFoundException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND) //404
+// So @ResponseStatus annotation cause spring-boot to response with the specific HTTP status code whenever this exception is thown from your contoller.
 public class ResourceNotFoundException extends RuntimeException{
     
     private String resourceName;
@@ -18,6 +18,28 @@ public class ResourceNotFoundException extends RuntimeException{
     this.fieldName = fieldName;
     this.fieldValue = fieldValue;
 
+    }
+
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public String getFieldName(){
+        return fieldName;
+    }
+
+    public String getFieldValue(){
+
+        return fieldValue;
+
+    }
+
+    public ResourceNotFoundException(String message){
+        super(message);
+    }
+    
+
 
     /*  Simple method for this class:
     
@@ -29,6 +51,6 @@ public class ResourceNotFoundException extends RuntimeException{
     */
 
 
-    }
+    
 
 }
