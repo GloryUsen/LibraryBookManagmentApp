@@ -139,6 +139,57 @@ public class BookServiceImpl implements BookService{
         return dto;
     }
 
+        @Override
+        public BookDto getBookById(Long id) {
+
+            Book book = bookRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+            return mapBookEntityToDto(book);
+        }
+
+        @Override
+        public BookDto updateBook(BookDto bookDto, long id) {
+
+            // Getting the existing book o throw an 404 error
+
+            Book book = bookRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+
+            // Setting the Book id by updating the details
+
+            book.setTitle(bookDto.getTitle());
+            book.setAuthor(bookDto.getAuthor());
+            book.setIsbn(bookDto.getIsbn());
+            book.setAvailable(bookDto.isAvailable());
+            book.setStatus(bookDto.getStatus());
+
+            // Handles category
+            if(bookDto.getCategory() != null){
+                Category category = categoryRepository.findById(bookDto.getCategory().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", 
+                bookDto.getCategory().getId()));
+
+                book.setCategory(category);
+
+            }
+
+            // Saving updated book
+            Book updatedBook = bookRepository.save(book);
+            
+            // Returning dto 
+
+            return mapBookEntityToDto(book);
+            
+        }
+
+    @Override
+        public void deleteBookById(long id) {
+        
+            Book book = bookRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+           bookRepository.delete(book);
+        }
+
 
 }
 

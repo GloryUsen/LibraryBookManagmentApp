@@ -1,7 +1,5 @@
 package com.glory.dto;
 
-import lombok.Data;
-
 
 public class CategoryDto {
 
