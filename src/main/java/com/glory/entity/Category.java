@@ -2,6 +2,9 @@ package com.glory.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,8 +37,11 @@ public class Category {
     @Column(unique = true)
     private String name;
 
+    private String description;
 
-    @OneToMany(mappedBy = "category")
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval= true)
     private List<Book> books;
     
     }
