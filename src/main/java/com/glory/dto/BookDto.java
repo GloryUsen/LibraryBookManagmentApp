@@ -2,11 +2,12 @@ package com.glory.dto;
 
 import com.glory.enums.BookStatus;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-//@Getter
-//@Setter
+//@Data
+@Getter
+@Setter
 public class BookDto {
 
     private Long id;

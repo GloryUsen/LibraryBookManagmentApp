@@ -2,6 +2,8 @@ package com.glory.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +31,7 @@ public class Role {
     private String name;
 
 
+    @JsonIgnore
     @OneToMany(mappedBy = "role")
     private List<User> users;
 

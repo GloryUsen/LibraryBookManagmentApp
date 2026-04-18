@@ -23,28 +23,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto addCategory(CategoryDto categoryDto) {
 
-        Category category = new Category();
-        category.setName(categoryDto.getName());
-        category.setDescription(categoryDto.getDescription());
+        // Category category = new Category();
+        // category.setName(categoryDto.getName());
+        // category.setDescription(categoryDto.getDescription());
 
+
+        Category category = mapCategoryDtoToCategoryEntity(categoryDto);
         Category savedCategory = categoryRepository.save(category);
-
         return mapCategoryEntityToCategoryDto(savedCategory);
-        
-    }
-
-    private CategoryDto mapCategoryEntityToCategoryDto(Category category) {
-
-        CategoryDto dto = new CategoryDto();
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        dto.setDescription(category.getDescription());
-        
-
-        return dto;
-
 
     }
+
 
     @Override
     public CategoryDto getCategoryById(Long categoryId) {
@@ -95,7 +84,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
 
-    private CategoryDto mapCategoryEntityToCategoryDto2(Category category){
+    private CategoryDto mapCategoryEntityToCategoryDto(Category category){
 
         CategoryDto dto = new CategoryDto();
 
