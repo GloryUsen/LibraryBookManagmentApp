@@ -2,6 +2,10 @@ package com.glory.serviceImpl;
 
 
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.UserDto;
@@ -42,25 +46,52 @@ public class UserServiceImpl implements UserService{
         
     }
 
-    // @Override
-    // public UserDto getUserById(Long id) {
+      @Override
+        public UserDto getByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-    // }
+        return mapUserEntityToUserDto(user);
+    }
 
-    // @Override
-    // public List<UserDto> getAllUsers() {
 
-    // }
-
-    // @Override
-    // public UserDto updateUser(Long id, UserDto userDto) {
-
-    // }
-
-    // @Override
-    // public void deleteUser(Long id) {
         
-    // }
+
+            @Override
+        public List<UserDto> getAllUsers() {
+            return userRepository.findAll()
+                    .stream()
+                    .map(this::mapUserEntityToUserDto)
+                    .collect(Collectors.toList());
+        }
+  @Override
+    public UserDto updateUser(Long id, UserDto userDto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+
+        Role role = roleRepository.findByName(userDto.getRoleName())
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", userDto.getRoleName()));
+
+        user.setRole(role);
+
+        User updatedUser = userRepository.save(user);
+
+        return mapUserEntityToUserDto(updatedUser);
+    }
+
+         @Override
+    public void deleteUser(Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        userRepository.delete(user);
+    }
 
 
     private UserDto mapUserEntityToUserDto(User user){
