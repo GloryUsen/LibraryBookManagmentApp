@@ -13,12 +13,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
-
 
 
 @Entity
@@ -38,7 +34,7 @@ public class User {
     return id;
 }
 
-public void settId(Long id) {
+public void setId(Long id) {
      this.id = id;
 }
 
@@ -97,7 +93,7 @@ public void setPassword(String password) {
     return loans;
 }
 
-public void setLoane(List<Loan> loans) {
+public void setLoan(List<Loan> loans) {
     this.loans = loans;
 }
 

@@ -15,11 +15,10 @@ import com.glory.repository.CategoryRepository;
 import com.glory.service.BookService;
 
 @Service
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
-
 
     public BookServiceImpl(BookRepository bookRepository, CategoryRepository categoryRepository) {
         this.bookRepository = bookRepository;
@@ -28,55 +27,43 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public BookDto addBook(BookDto bookDto) {
-    Book book = mapBookDtoToEntity(bookDto);
-    Book savedBook = bookRepository.save(book);
-
-    return mapBookEntityToDto(savedBook);
-
+        Book book = mapBookDtoToEntity(bookDto);
+        Book savedBook = bookRepository.save(book);
+        return mapBookEntityToDto(savedBook);
     }
 
-    
     @Override
     public List<BookDto> getAllBooks() {
-
-        List<Book> books = bookRepository.findAll();
-        return books.stream()
-          .map(this::mapBookEntityToDto)
-          .collect(Collectors.toList());
+        return bookRepository.findAll()
+                .stream()
+                .map(this::mapBookEntityToDto)
+                .collect(Collectors.toList());
     }
 
-    
+    private Book mapBookDtoToEntity(BookDto dto) {
+        Book book = new Book();
 
-        private Book mapBookDtoToEntity(BookDto dto){
+        book.setTitle(dto.getTitle());
+        book.setAuthor(dto.getAuthor());
+        book.setIsbn(dto.getIsbn());
+        book.setAvailable(dto.isAvailable());
+        book.setStatus(dto.getStatus());
 
-            Book book = new Book();
+        if (dto.getCategory() != null) {
+            Category category = categoryRepository.findById(dto.getCategory().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category",
+                            "id",
+                            dto.getCategory().getId()
+));
 
-            book.setId(dto.getId());
-            book.setTitle(dto.getTitle());
-            book.setAuthor(dto.getAuthor());
-            book.setIsbn(dto.getIsbn());
-            book.setAvailable(dto.isIsAvailable());
-            book.setStatus(dto.getStatus());
+            book.setCategory(category);
+        }
 
-
-            if(dto.getCategory() != null){
-                Category category = categoryRepository.findById(dto.getCategory().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", 
-                dto.getCategory().getId()));
-
-                book.setCategory(category);
-
-            }
-
-            return book;
-
+        return book;
     }
 
-
-
-
-        private BookDto mapBookEntityToDto(Book book){
-
+    private BookDto mapBookEntityToDto(Book book) {
         BookDto dto = new BookDto();
 
         dto.setId(book.getId());
@@ -86,7 +73,7 @@ public class BookServiceImpl implements BookService{
         dto.setIsAvailable(book.isAvailable());
         dto.setStatus(book.getStatus());
 
-        if(book.getCategory() != null){
+        if (book.getCategory() != null) {
             CategoryDto categoryDto = new CategoryDto();
             categoryDto.setId(book.getCategory().getId());
             categoryDto.setName(book.getCategory().getName());
@@ -96,58 +83,46 @@ public class BookServiceImpl implements BookService{
         return dto;
     }
 
-        @Override
-        public BookDto getBookById(Long id) {
+    @Override
+    public BookDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
 
-            Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
-            return mapBookEntityToDto(book);
-        }
-
-        @Override
-        public BookDto updateBook(BookDto bookDto, long id) {
-
-            // Getting the existing book o throw an 404 error
-
-            Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Book", "id",
-            bookDto.getCategory().getId()));
-
-            // Setting the Book id by updating the details
-
-            book.setTitle(bookDto.getTitle());
-            book.setAuthor(bookDto.getAuthor());
-            book.setIsbn(bookDto.getIsbn());
-            book.setAvailable(bookDto.isIsAvailable());
-            book.setStatus(bookDto.getStatus());
-
-            // Handles category
-            if(bookDto.getCategory() != null){
-                Category category = categoryRepository.findById(bookDto.getCategory().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", 
-                bookDto.getCategory().getId()));
-
-                book.setCategory(category);
-
-            }
-
-            // Saving updated book
-            Book updatedBook = bookRepository.save(book);
-            
-            // Returning dto 
-
-            return mapBookEntityToDto(updatedBook);
-            
-        }
+        return mapBookEntityToDto(book);
+    }
 
     @Override
-        public void deleteBookById(long id) {
-        
-            Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
-           bookRepository.delete(book);
+    public BookDto updateBook(BookDto bookDto, long id) {
+
+       
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+
+        book.setTitle(bookDto.getTitle());
+        book.setAuthor(bookDto.getAuthor());
+        book.setIsbn(bookDto.getIsbn());
+        book.setAvailable(bookDto.isAvailable());
+        book.setStatus(bookDto.getStatus());
+
+        if (bookDto.getCategory() != null) {
+            Category category = categoryRepository.findById(bookDto.getCategory().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category",
+                            "id",
+                            bookDto.getCategory().getId()));
+
+            book.setCategory(category);
         }
 
+        Book updatedBook = bookRepository.save(book);
+        return mapBookEntityToDto(updatedBook);
+    }
 
+    @Override
+    public void deleteBookById(long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+
+        bookRepository.delete(book);
+    }
 }
-

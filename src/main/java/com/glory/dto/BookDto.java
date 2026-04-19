@@ -2,12 +2,8 @@ package com.glory.dto;
 
 import com.glory.enums.BookStatus;
 
-import lombok.Getter;
-import lombok.Setter;
 
-//@Data
-@Getter
-@Setter
+
 public class BookDto {
 
     private Long id;
@@ -50,7 +46,7 @@ public class BookDto {
         this.isbn = isbn;
     }
 
-    public boolean isIsAvailable() {
+    public boolean isAvailable() {
         return isAvailable;
     }
 
