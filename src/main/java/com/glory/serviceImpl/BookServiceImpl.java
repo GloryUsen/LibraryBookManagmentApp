@@ -55,7 +55,7 @@ public class BookServiceImpl implements BookService{
             book.setTitle(dto.getTitle());
             book.setAuthor(dto.getAuthor());
             book.setIsbn(dto.getIsbn());
-            book.setAvailable(dto.isAvailable());
+            book.setAvailable(dto.isIsAvailable());
             book.setStatus(dto.getStatus());
 
 
@@ -83,7 +83,7 @@ public class BookServiceImpl implements BookService{
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
-        dto.setAvailable(book.isAvailable());
+        dto.setIsAvailable(book.isAvailable());
         dto.setStatus(book.getStatus());
 
         if(book.getCategory() != null){
@@ -118,7 +118,7 @@ public class BookServiceImpl implements BookService{
             book.setTitle(bookDto.getTitle());
             book.setAuthor(bookDto.getAuthor());
             book.setIsbn(bookDto.getIsbn());
-            book.setAvailable(bookDto.isAvailable());
+            book.setAvailable(bookDto.isIsAvailable());
             book.setStatus(bookDto.getStatus());
 
             // Handles category

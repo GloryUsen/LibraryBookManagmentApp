@@ -82,11 +82,11 @@ public class LoanServiceImpl implements LoanService{
         .orElseThrow(() -> new ResourceNotFoundException("Loan", "id", loanId));
 
         returnLoan.setReturned(true);
-        returnLoan.setReturnDate(LocalDate.now());
+        returnLoan.setReturnedDate(LocalDate.now());
 
         Loan updatedLoan = loanRepository.save(returnLoan);
 
-        return mapLoanEntityToLoanDto(returnLoan);
+        return mapLoanEntityToLoanDto(updatedLoan);
     }
 
 
@@ -113,7 +113,7 @@ public class LoanServiceImpl implements LoanService{
         
         dto.setId(loanEntity.getId());
         dto.setBorrowDate(loanEntity.getBorrowDate());
-        dto.setReturnDate(loanEntity.getReturnDate());
+        dto.setReturnDate(loanEntity.getReturnedDate());
         dto.setReturned(loanEntity.isReturned());
 
         if(loanEntity.getUser() != null){

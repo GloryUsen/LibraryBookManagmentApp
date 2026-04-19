@@ -1,36 +1,38 @@
 package com.glory.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-//@Data
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
 
 public class RoleDto {
+ 
+    private Long id; 
+    private String name;
 
-
-
-
-
-    
-    public Long getId(){
-        return id;
-        
+    public RoleDto(Long id, String name){
+        this.id = id;
+        this.name = name;
     }
-    private Long id;
+
+    public Long getid(){
+        return id;
+    }
+
+    public void setId(Long id){
+        this.id = id;
+    }
 
     public String getName(){
         return name;
-        
     }
-    
-    private String name;
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+
 
 }

@@ -17,4 +17,31 @@ public class CategoryDto {
     private String name;
     private String description;
 
+
+     public void setId(Long id) {
+        this.id = id;
+    }
+
+
+     public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
 }
