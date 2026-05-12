@@ -1,11 +1,11 @@
 package com.glory.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+// import lombok.Data;
+// import lombok.NoArgsConstructor;
 
 
-@Data
-@NoArgsConstructor
+// @Data
+// @NoArgsConstructor
 
 public class RoleDto {
  
@@ -32,7 +32,4 @@ public class RoleDto {
     public void setName(String name){
         this.name = name;
     }
-
-
-
 }

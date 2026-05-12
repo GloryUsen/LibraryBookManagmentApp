@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.glory.dto.BookDto;
+import com.glory.dto.BookRequestDto;
+import com.glory.dto.BookResponseDto;
 import com.glory.service.BookService;
 
 @RestController
@@ -27,27 +28,27 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto){
-        BookDto savedBook = bookService.addBook(bookDto);
+    public ResponseEntity<BookResponseDto> addBook(@RequestBody BookRequestDto bookDto){
+        BookResponseDto savedBook = bookService.addBook(bookDto);
         return new ResponseEntity<>(savedBook,  HttpStatus.CREATED);
         
     }
 
     @GetMapping
-    public List<BookDto> getAllBooks(){
+    public List<BookResponseDto> getAllBooks(){
         return bookService.getAllBooks();
         
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable(name = "id") long id){
+    public ResponseEntity<BookResponseDto> getBookById(@PathVariable(name = "id") long id){
         return ResponseEntity.ok(bookService.getBookById(id));
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDto> updateBook(@RequestBody BookDto bookDto, @PathVariable(name = "id") long id){
+    public ResponseEntity<BookResponseDto> updateBook(@RequestBody BookRequestDto bookDto, @PathVariable(name = "id") long id){
        // BookDto bookResponse =  bookService.updateBook(bookDto, id);
         //return new ResponseEntity<>(bookResponse, HttpStatus.OK);
         return ResponseEntity.ok(bookService.updateBook(bookDto, id));

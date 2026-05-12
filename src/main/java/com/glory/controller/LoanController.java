@@ -21,7 +21,7 @@ public class LoanController {
         this.loanService = loanService;
     }
 
-    @PostMapping
+    @PostMapping("/borrow")
     public ResponseEntity<LoanDto> borrowBook(@RequestBody LoanDto loanDto){
         System.out.println("🔥 Loan API HIT");
        LoanDto loanBook =  loanService.borrowBook(loanDto);

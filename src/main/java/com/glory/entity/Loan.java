@@ -12,16 +12,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+// import lombok.AllArgsConstructor;
+// import lombok.NoArgsConstructor;
 
 
 
 
 @Entity
 @Table(name = "loans")
-@NoArgsConstructor
-@AllArgsConstructor
+// @NoArgsConstructor
+// @AllArgsConstructor
 
 
 

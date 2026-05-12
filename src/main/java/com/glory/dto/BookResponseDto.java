@@ -4,7 +4,7 @@ import com.glory.enums.BookStatus;
 
 
 
-public class BookDto {
+public class BookResponseDto {
 
     private Long id;
     private String title;
@@ -64,6 +64,7 @@ public class BookDto {
 
     public CategoryDto getCategory() {
         return category;
+
     }
 
     public void setCategory(CategoryDto category) {
@@ -72,3 +73,4 @@ public class BookDto {
 
 
 }
+

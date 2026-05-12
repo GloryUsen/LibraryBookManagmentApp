@@ -6,7 +6,7 @@ import com.glory.dto.CategoryDto;
 
 public interface CategoryService {
 
-    CategoryDto addCategory(CategoryDto categoryDto);
+    CategoryDto createCategory(CategoryDto categoryDto);
 
     CategoryDto getCategoryById(Long id);
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,15 +13,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.UniqueConstraint;
+// import lombok.AllArgsConstructor;
 
-import lombok.NoArgsConstructor;
+// import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "users")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "email")
+})
+// @AllArgsConstructor
+// @NoArgsConstructor
 
 
 public class User {
@@ -49,8 +53,9 @@ public void setName(String name) {
     this.name = name;
 }
 
-
+    @Column(nullable = false, unique = true)
     private String email;
+
 
 
     public String getEmail() {

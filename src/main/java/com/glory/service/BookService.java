@@ -2,17 +2,18 @@ package com.glory.service;
 
 import java.util.List;
 
-import com.glory.dto.BookDto;
+import com.glory.dto.BookRequestDto;
+import com.glory.dto.BookResponseDto;
 
 public interface BookService {
 
-    BookDto addBook (BookDto book); 
+    BookResponseDto addBook (BookRequestDto bookRequestDto); 
 
-    List<BookDto> getAllBooks();
+    List<BookResponseDto> getAllBooks();
 
-    BookDto getBookById(Long id);
+    BookResponseDto getBookById(Long id);
     
-    BookDto updateBook(BookDto bookDto, long id);
+    BookResponseDto updateBook(BookRequestDto bookRequestDto, long id);
 
     void deleteBookById(long id);
 

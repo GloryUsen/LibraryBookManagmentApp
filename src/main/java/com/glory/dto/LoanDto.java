@@ -2,14 +2,14 @@ package com.glory.dto;
 
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+// import lombok.AllArgsConstructor;
+// import lombok.Data;
+// import lombok.NoArgsConstructor;
 
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
 
 public class LoanDto {
 
