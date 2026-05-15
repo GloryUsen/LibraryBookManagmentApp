@@ -4,12 +4,13 @@ import java.util.List;
 
 import com.glory.dto.BookRequestDto;
 import com.glory.dto.BookResponseDto;
+import com.glory.dto.PageBookResponse;
 
 public interface BookService {
 
     BookResponseDto addBook (BookRequestDto bookRequestDto); 
 
-    List<BookResponseDto> getAllBooks();
+    PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy);
 
     BookResponseDto getBookById(Long id);
     

@@ -3,11 +3,16 @@ package com.glory.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.BookRequestDto;
 import com.glory.dto.BookResponseDto;
 import com.glory.dto.CategoryDto;
+import com.glory.dto.PageBookResponse;
 import com.glory.entity.Book;
 import com.glory.entity.Category;
 import com.glory.enums.BookStatus;
@@ -47,18 +52,40 @@ public class BookServiceImpl implements BookService {
     
 
     @Override
-    public List<BookResponseDto> getAllBooks() {
-        return bookRepository.findAll()
-                .stream()
-                .map(this::mapBookEntityToBookResponse)
-                .collect(Collectors.toList());
-    }
+    public PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy) {
+
+      // Pageable pageable = PageRequest.of(pageNo, pageSize);
+      Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+
+
+      //Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
+        // List<Book> books =  bookRepository.findAll();
+        Page<Book> books = bookRepository.findAllWithCategory(pageable);
+
+        List<Book> listOfBooks = books.getContent();
+
+             // return books.stream().map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
+            //  return listOfBooks.stream().map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
+             List<BookResponseDto> bookContent = listOfBooks.stream()
+             .map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
+
+             PageBookResponse response = new PageBookResponse();
+             response .setBookContent(bookContent);
+             response.setPageSize(books.getSize());
+             response.setPageNo(books.getNumber());
+             response.setPageElements(books.getTotalElements());
+             response.setTotalPage(books.getTotalPages());
+             response.setLast(books.isLast());
+
+             return response;
+            }
 
     private Book mapBookRequestDtoToEntity(BookRequestDto dto) {
         Book book = new Book();
 
         book.setTitle(dto.getTitle());
-
+        book.setAuthor(dto.getAuthor());
+        book.setIsbn(dto.getIsbn());
         book.setAvailable(true);
         book.setStatus(BookStatus.AVAILABLE);
 
