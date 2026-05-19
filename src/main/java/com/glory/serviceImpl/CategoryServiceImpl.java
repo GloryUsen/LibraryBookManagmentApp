@@ -3,6 +3,7 @@ package com.glory.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.CategoryDto;
@@ -15,9 +16,11 @@ import com.glory.service.CategoryService;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private ModelMapper mapper;
 
-    public CategoryServiceImpl(CategoryRepository  categoryRepository){
+    public CategoryServiceImpl(CategoryRepository  categoryRepository, ModelMapper mapper){
         this.categoryRepository = categoryRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -86,11 +89,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryDto mapCategoryEntityToCategoryDto(Category category){
 
-        CategoryDto dto = new CategoryDto();
+        CategoryDto dto = mapper.map(category, CategoryDto.class);
 
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        dto.setDescription(category.getDescription());
+        // CategoryDto dto = new CategoryDto();
+
+        // dto.setId(category.getId());
+        // dto.setName(category.getName());
+        // dto.setDescription(category.getDescription());
 
         return dto;
 
@@ -98,10 +103,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Category mapCategoryDtoToCategoryEntity(CategoryDto dto){
 
-        Category category = new Category();
+        Category category = mapper.map(dto, Category.class);
 
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
+        // Category category = new Category();
+
+        // category.setName(dto.getName());
+        // category.setDescription(dto.getDescription());
 
         return category;
 

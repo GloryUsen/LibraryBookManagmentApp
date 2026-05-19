@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.UserDto;
@@ -21,10 +22,12 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private ModelMapper mapper;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository){
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper mapper){
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -96,11 +99,13 @@ public class UserServiceImpl implements UserService{
 
     private UserDto mapUserEntityToUserDto(User user){
 
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setPassword(user.getPassword());
+        UserDto dto = mapper.map(user, UserDto.class);
+
+        // UserDto dto = new UserDto();
+        // dto.setId(user.getId());
+        // dto.setName(user.getName());
+        // dto.setEmail(user.getEmail());
+        // dto.setPassword(user.getPassword());
 
         if(user.getRole() != null){
             dto.setRoleName(user.getRole().getName());

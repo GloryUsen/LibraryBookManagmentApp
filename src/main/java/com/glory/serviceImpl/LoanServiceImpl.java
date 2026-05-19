@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.LoanDto;
@@ -24,11 +25,13 @@ public class LoanServiceImpl implements LoanService{
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private ModelMapper mapper;
 
-    public LoanServiceImpl(LoanRepository loanRepository, UserRepository userRepository, BookRepository bookRepository){
+    public LoanServiceImpl(LoanRepository loanRepository, UserRepository userRepository, BookRepository bookRepository, ModelMapper mapper){
         this.loanRepository = loanRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.mapper = mapper;
 
     }
 
@@ -109,12 +112,14 @@ public class LoanServiceImpl implements LoanService{
     
     public LoanDto mapLoanEntityToLoanDto(Loan loanEntity){
 
-        LoanDto dto = new LoanDto();
+        LoanDto dto = mapper.map(loanEntity, LoanDto.class);
+
+        // LoanDto dto = new LoanDto();
         
-        dto.setId(loanEntity.getId());
-        dto.setBorrowDate(loanEntity.getBorrowDate());
-        dto.setReturnDate(loanEntity.getReturnedDate());
-        dto.setReturned(loanEntity.isReturned());
+        // dto.setId(loanEntity.getId());
+        // dto.setBorrowDate(loanEntity.getBorrowDate());
+        // dto.setReturnDate(loanEntity.getReturnedDate());
+        // dto.setReturned(loanEntity.isReturned());
 
         if(loanEntity.getUser() != null){
             dto.setUserId(loanEntity.getUser().getId());

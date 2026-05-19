@@ -1,7 +1,5 @@
 package com.glory.service;
 
-import java.util.List;
-
 import com.glory.dto.BookRequestDto;
 import com.glory.dto.BookResponseDto;
 import com.glory.dto.PageBookResponse;

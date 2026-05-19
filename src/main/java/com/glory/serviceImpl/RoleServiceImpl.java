@@ -3,6 +3,7 @@ package com.glory.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.glory.dto.RoleDto;
@@ -16,9 +17,11 @@ import com.glory.service.RoleService;
 public class RoleServiceImpl implements RoleService{
 
     private final RoleRepository roleRepository;
+    private ModelMapper mapper;
 
-    public RoleServiceImpl(RoleRepository roleRepository){
+    public RoleServiceImpl(RoleRepository roleRepository, ModelMapper mapper){
         this.roleRepository = roleRepository;
+        this.mapper = mapper;
 
     }
 
@@ -71,16 +74,19 @@ public class RoleServiceImpl implements RoleService{
 
     private Role mapRoleDtoToRoleEntity(RoleDto roleDto){
 
-        Role role = new Role();
-        role.setName(roleDto.getName());
-        return role;
+        Role role = mapper.map(roleDto, Role.class);
+
+        // Role role = new Role();
+        // role.setName(roleDto.getName());
+         return role;
         
     }
 
 
     
     private RoleDto mapRoleEntityToRoleDto(Role role){
-        return new RoleDto(role.getId(), role.getName());
+      //  return new RoleDto(role.getId(), role.getName());
+      return mapper.map(role, RoleDto.class);
    
 }
 }

@@ -1,10 +1,9 @@
 package com.glory.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.glory.dto.UserDto;
-import com.glory.entity.User;
+
 
 public interface UserService {
 
