@@ -53,7 +53,7 @@ public class BookController {
         @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_PAGE_DIRECTION) String direction
 
     ){
-        return bookService.getAllBooks(pageNo, pageSize, sortBy);
+        return bookService.getAllBooks(pageNo, pageSize, sortBy, direction);
         
     }
 

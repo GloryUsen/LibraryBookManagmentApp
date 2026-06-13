@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.glory.dto.LoanDto;
+import com.glory.dto.LoanRequestDto;
+import com.glory.dto.LoanResponseDto;
+import com.glory.dto.PageLoanResponse;
 import com.glory.service.LoanService;
+import com.glory.utils.AppConstants;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -28,33 +32,34 @@ public class LoanController {
     }
 
     @PostMapping("/borrow")
-    public ResponseEntity<LoanDto> borrowBook(@RequestBody LoanDto loanDto){
-       // System.out.println("🔥 Loan API HIT");
-       LoanDto loanBook =  loanService.borrowBook(loanDto);
+    public ResponseEntity<LoanResponseDto> borrowBook(@RequestBody LoanRequestDto loanRequestDto){
+       LoanResponseDto loanBook =  loanService.borrowBook(loanRequestDto);
         return new ResponseEntity<>(loanBook, HttpStatus.CREATED);
         
     }
 
     @GetMapping("/{loanId}")
-    public ResponseEntity<LoanDto> getLoanById(@PathVariable Long loanId){
-        LoanDto loan = loanService.getLoanById(loanId);
+    public ResponseEntity<LoanResponseDto> getLoanById(@PathVariable Long loanId){
+        LoanResponseDto loan = loanService.getLoanById(loanId);
 
         return ResponseEntity.ok(loan);
 
     }
 
     @GetMapping
-    public ResponseEntity <List<LoanDto>> getAllLoans(){
-        List<LoanDto> loans = loanService.getAllLoans();
-        return ResponseEntity.ok(loans);
-
-
+    public ResponseEntity<PageLoanResponse> getAllLoans(
+        @RequestParam(value = "PageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo,
+        @RequestParam(value = "PageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
+        @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_PAGE_SORT_BY) String sortBy,
+        @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_PAGE_DIRECTION) String direction
+    ){
+        return ResponseEntity.ok(loanService.getAllLoans(pageNo, pageSize, sortBy, direction));
     }
 
     @PutMapping("/return/{loanId}")
-    public ResponseEntity<LoanDto> returnBook(@PathVariable Long loanId){
+    public ResponseEntity<LoanResponseDto> returnBook(@PathVariable Long loanId){
 
-        LoanDto returnBook = loanService.returnBook(loanId);
+        LoanResponseDto returnBook = loanService.returnBook(loanId);
         return ResponseEntity.ok(returnBook);
         
     }

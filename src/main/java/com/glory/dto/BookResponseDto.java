@@ -12,7 +12,7 @@ public class BookResponseDto {
     private String isbn;
     private boolean isAvailable;
     private BookStatus status; 
-    private CategoryDto category;
+    private CategoryResponseDto category;
 
     public Long getId() {
         return id;
@@ -62,12 +62,12 @@ public class BookResponseDto {
         this.status = status;
     }
 
-    public CategoryDto getCategory() {
+    public CategoryResponseDto getCategory() {
         return category;
 
     }
 
-    public void setCategory(CategoryDto category) {
+    public void setCategory(CategoryResponseDto category) {
         this.category = category;
     }
 

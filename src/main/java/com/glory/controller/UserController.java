@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.glory.dto.UserDto;
+import com.glory.dto.UserRequestDto;
+import com.glory.dto.UserResponseDto;
+import com.glory.dto.PageUserResponse;
 import com.glory.service.UserService;
+import com.glory.utils.AppConstants;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,24 +33,29 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto){
+        return new ResponseEntity<>(userService.createUser(userRequestDto), HttpStatus.CREATED);
     }
 
      @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getByEmail(@PathVariable String email){
+    public ResponseEntity<UserResponseDto> getByEmail(@PathVariable String email){
         return ResponseEntity.ok(userService.getByEmail(email));
     }
 
      @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<PageUserResponse> getAllUsers(
+        @RequestParam(value = "PageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo,
+        @RequestParam(value = "PageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
+        @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_PAGE_SORT_BY) String sortBy,
+        @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_PAGE_DIRECTION) String direction
+    ){
+        return ResponseEntity.ok(userService.getAllUsers(pageNo, pageSize, sortBy, direction));
     }
 
      @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
-                                               @RequestBody UserDto userDto){
-        return ResponseEntity.ok(userService.updateUser(id, userDto));
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
+                                               @RequestBody UserRequestDto userRequestDto){
+        return ResponseEntity.ok(userService.updateUser(id, userRequestDto));
     }
 
     @DeleteMapping("/{id}")

@@ -4,9 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.glory.dto.CategoryDto;
+import com.glory.dto.CategoryRequestDto;
+import com.glory.dto.CategoryResponseDto;
+import com.glory.dto.PageCategoryResponse;
 import com.glory.entity.Category;
 import com.glory.exception.ResourceNotFoundException;
 import com.glory.repository.CategoryRepository;
@@ -24,44 +30,63 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto createCategory(CategoryDto categoryDto) {
+    public CategoryResponseDto createCategory(CategoryRequestDto categoryDto) {
 
         // Category category = new Category();
         // category.setName(categoryDto.getName());
         // category.setDescription(categoryDto.getDescription());
 
 
-        Category category = mapCategoryDtoToCategoryEntity(categoryDto);
+        Category category = mapCategoryRequestDtoToCategoryEntity(categoryDto);
         Category savedCategory = categoryRepository.save(category);
-        return mapCategoryEntityToCategoryDto(savedCategory);
+        return mapCategoryEntityToCategoryResponseDto(savedCategory);
 
     }
 
 
     @Override
-    public CategoryDto getCategoryById(Long categoryId) {
+    public CategoryResponseDto getCategoryById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
 
-        return mapCategoryEntityToCategoryDto(category);
+        return mapCategoryEntityToCategoryResponseDto(category);
         
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
+    public PageCategoryResponse getAllCategories(
+            int pageNo,
+            int pageSize,
+            String sortBy,
+            String direction){
 
-        List<Category> categories =  categoryRepository.findAll();
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        return categories.stream()
-        .map(this::mapCategoryEntityToCategoryDto)
-        .collect(Collectors.toList());
+        Page<Category> categories = categoryRepository.findAll(pageable);
 
+        List<CategoryResponseDto> contents = categories.getContent()
+                .stream()
+                .map(this::mapCategoryEntityToCategoryResponseDto)
+                .collect(Collectors.toList());
+
+        PageCategoryResponse response = new PageCategoryResponse();
+        response.setContent(contents);
+        response.setPageNo(categories.getNumber());
+        response.setPageSize(categories.getSize());
+        response.setTotalElements(categories.getTotalElements());
+        response.setTotalPages(categories.getTotalPages());
+        response.setLast(categories.isLast());
+
+        return response;
+        }
         
-    }
 
     @Override
-    public CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId) {
+    public CategoryResponseDto updateCategory(CategoryRequestDto categoryDto, Long categoryId) {
 
        Category category =  categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
@@ -72,7 +97,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category updateCategory = categoryRepository.save(category);
 
-        return mapCategoryEntityToCategoryDto(updateCategory);
+        return mapCategoryEntityToCategoryResponseDto(updateCategory);
 
         
     }
@@ -87,30 +112,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 
 
-    private CategoryDto mapCategoryEntityToCategoryDto(Category category){
+    private CategoryResponseDto mapCategoryEntityToCategoryResponseDto(Category category){
 
-        CategoryDto dto = mapper.map(category, CategoryDto.class);
-
-        // CategoryDto dto = new CategoryDto();
-
-        // dto.setId(category.getId());
-        // dto.setName(category.getName());
-        // dto.setDescription(category.getDescription());
-
-        return dto;
+        return mapper.map(category, CategoryResponseDto.class);
 
     }
 
-    private Category mapCategoryDtoToCategoryEntity(CategoryDto dto){
-
-        Category category = mapper.map(dto, Category.class);
-
-        // Category category = new Category();
-
-        // category.setName(dto.getName());
-        // category.setDescription(dto.getDescription());
-
-        return category;
+    private Category mapCategoryRequestDtoToCategoryEntity(CategoryRequestDto dto){
+        return mapper.map(dto, Category.class);
 
     }
     

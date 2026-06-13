@@ -8,7 +8,7 @@ public interface BookService {
 
     BookResponseDto addBook (BookRequestDto bookRequestDto); 
 
-    PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy);
+    PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy, String direction);
 
     BookResponseDto getBookById(Long id);
     

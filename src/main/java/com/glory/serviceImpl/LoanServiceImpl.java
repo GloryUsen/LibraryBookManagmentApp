@@ -5,9 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.glory.dto.LoanDto;
+import com.glory.dto.LoanRequestDto;
+import com.glory.dto.LoanResponseDto;
+import com.glory.dto.PageLoanResponse;
 import com.glory.entity.Book;
 import com.glory.entity.Loan;
 import com.glory.entity.User;
@@ -36,15 +42,15 @@ public class LoanServiceImpl implements LoanService{
     }
 
     @Override
-    public LoanDto borrowBook(LoanDto loanDto) {
+    public LoanResponseDto borrowBook(LoanRequestDto loanRequestDto) {
 
         Loan loan = new Loan();
 
-        User user = userRepository.findById(loanDto.getUserId())
-        .orElseThrow(() -> new ResourceNotFoundException("User", "id", loanDto.getUserId()));
+        User user = userRepository.findById(loanRequestDto.getUserId())
+        .orElseThrow(() -> new ResourceNotFoundException("User", "id", loanRequestDto.getUserId()));
 
-        Book book = bookRepository.findById(loanDto.getBookId())
-        .orElseThrow(() -> new ResourceNotFoundException("Book", "id", loanDto.getBookId()));
+        Book book = bookRepository.findById(loanRequestDto.getBookId())
+        .orElseThrow(() -> new ResourceNotFoundException("Book", "id", loanRequestDto.getBookId()));
 
         loan.setUser(user);
         loan.setBook(book);
@@ -52,34 +58,52 @@ public class LoanServiceImpl implements LoanService{
 
         Loan savedLoan = loanRepository.save(loan);
 
-        return mapLoanEntityToLoanDto(savedLoan);
+        return mapLoanEntityToLoanResponseDto(savedLoan);
 
         
     }
 
     @Override
-    public LoanDto getLoanById(Long loanId){
+    public LoanResponseDto getLoanById(Long loanId){
 
         Loan loanExist = loanRepository.findById(loanId)
         .orElseThrow(() -> new ResourceNotFoundException("Loan", "id", loanId));
 
-        return mapLoanEntityToLoanDto(loanExist);
+        return mapLoanEntityToLoanResponseDto(loanExist);
         
     }
 
 
 
     @Override
-    public List<LoanDto>  getAllLoans(){
-        List<Loan> loans = loanRepository.findAll();
+    public PageLoanResponse getAllLoans(int pageNo, int pageSize, String sortBy, String direction){
+        
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
-        return loans.stream()
-        .map(this::mapLoanEntityToLoanDto).collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
+        Page<Loan> loans = loanRepository.findAll(pageable);
+
+        List<LoanResponseDto> contents = loans.getContent()
+                .stream()
+                .map(this::mapLoanEntityToLoanResponseDto)
+                .collect(Collectors.toList());
+
+        PageLoanResponse response = new PageLoanResponse();
+        response.setContent(contents);
+        response.setPageNo(loans.getNumber());
+        response.setPageSize(loans.getSize());
+        response.setTotalElements(loans.getTotalElements());
+        response.setTotalPages(loans.getTotalPages());
+        response.setLast(loans.isLast());
+
+        return response;
     }
 
     @Override
-    public LoanDto returnBook(Long loanId){
+    public LoanResponseDto returnBook(Long loanId){
         Loan returnLoan = loanRepository.findById(loanId)
 
         .orElseThrow(() -> new ResourceNotFoundException("Loan", "id", loanId));
@@ -89,7 +113,7 @@ public class LoanServiceImpl implements LoanService{
 
         Loan updatedLoan = loanRepository.save(returnLoan);
 
-        return mapLoanEntityToLoanDto(updatedLoan);
+        return mapLoanEntityToLoanResponseDto(updatedLoan);
     }
 
 
@@ -110,16 +134,9 @@ public class LoanServiceImpl implements LoanService{
     //Mapping Entity To Dto Method
 
     
-    public LoanDto mapLoanEntityToLoanDto(Loan loanEntity){
+    public LoanResponseDto mapLoanEntityToLoanResponseDto(Loan loanEntity){
 
-        LoanDto dto = mapper.map(loanEntity, LoanDto.class);
-
-        // LoanDto dto = new LoanDto();
-        
-        // dto.setId(loanEntity.getId());
-        // dto.setBorrowDate(loanEntity.getBorrowDate());
-        // dto.setReturnDate(loanEntity.getReturnedDate());
-        // dto.setReturned(loanEntity.isReturned());
+        LoanResponseDto dto = mapper.map(loanEntity, LoanResponseDto.class);
 
         if(loanEntity.getUser() != null){
             dto.setUserId(loanEntity.getUser().getId());
@@ -128,7 +145,6 @@ public class LoanServiceImpl implements LoanService{
         if(loanEntity.getBook() != null){
             dto.setBookId(loanEntity.getBook().getId());
         }
-
 
         return dto;
         

@@ -2,17 +2,19 @@ package com.glory.service;
 
 import java.util.List;
 
-import com.glory.dto.RoleDto;
+import com.glory.dto.RoleRequestDto;
+import com.glory.dto.RoleResponseDto;
+import com.glory.dto.PageRoleResponse;
 
 public interface RoleService {
 
-    RoleDto createRole(RoleDto roleDto);
+    RoleResponseDto createRole(RoleRequestDto roleRequestDto);
 
-    RoleDto getRoleById(Long roleId);
+    RoleResponseDto getRoleById(Long roleId);
 
-    List<RoleDto> getAllRoles();
+    PageRoleResponse getAllRoles(int pageNo, int pageSize, String sortBy, String direction);
 
-    RoleDto updateRole(RoleDto roleDto, Long roleId);
+    RoleResponseDto updateRole(RoleRequestDto roleRequestDto, Long roleId);
 
     void deleteRole(Long id);
 

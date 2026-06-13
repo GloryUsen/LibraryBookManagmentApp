@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.glory.dto.BookRequestDto;
 import com.glory.dto.BookResponseDto;
-import com.glory.dto.CategoryDto;
+import com.glory.dto.CategoryRequestDto;
+import com.glory.dto.CategoryResponseDto;
 import com.glory.dto.PageBookResponse;
 import com.glory.entity.Book;
 import com.glory.entity.Category;
@@ -55,13 +56,14 @@ public class BookServiceImpl implements BookService {
     
 
     @Override
-    public PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy) {
+    public PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy, String direction) {
 
-      // Pageable pageable = PageRequest.of(pageNo, pageSize);
-      Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
+      Sort sort = direction.equalsIgnoreCase("desc")
+              ? Sort.by(sortBy).descending()
+              : Sort.by(sortBy).ascending();
+      
+      Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-
-      //Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortBy).descending());
         // List<Book> books =  bookRepository.findAll();
         Page<Book> books = bookRepository.findAllWithCategory(pageable);
 
@@ -161,9 +163,10 @@ public class BookServiceImpl implements BookService {
         // dto.setStatus(book.getStatus());
 
          if (book.getCategory() != null) {
-             CategoryDto categoryDto = new CategoryDto();
+             CategoryResponseDto categoryDto = new CategoryResponseDto();
              categoryDto.setId(book.getCategory().getId());
              categoryDto.setName(book.getCategory().getName());
+             categoryDto.setDescription(book.getCategory().getDescription());
              dto.setCategory(categoryDto);
         }
 

@@ -4,9 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.glory.dto.RoleDto;
+import com.glory.dto.RoleRequestDto;
+import com.glory.dto.RoleResponseDto;
+import com.glory.dto.PageRoleResponse;
 import com.glory.entity.Role;
 import com.glory.exception.ResourceNotFoundException;
 import com.glory.repository.RoleRepository;
@@ -26,40 +32,59 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public RoleDto createRole(RoleDto roleDto) {
-        Role role = mapRoleDtoToRoleEntity(roleDto);
+    public RoleResponseDto createRole(RoleRequestDto roleRequestDto) {
+        Role role = mapRoleRequestDtoToRoleEntity(roleRequestDto);
         Role saveRole = roleRepository.save(role);
 
-         return mapRoleEntityToRoleDto(saveRole);
+         return mapRoleEntityToRoleResponseDto(saveRole);
     }
 
 
     @Override
-    public RoleDto getRoleById(Long roleId){
+    public RoleResponseDto getRoleById(Long roleId){
        Role role = roleRepository.findById(roleId)
         .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
-        return mapRoleEntityToRoleDto(role);
+        return mapRoleEntityToRoleResponseDto(role);
     }
 
     @Override
-    public List<RoleDto> getAllRoles() {
+    public PageRoleResponse getAllRoles(int pageNo, int pageSize, String sortBy, String direction) {
+        
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
 
-        return roleRepository.findAll()
-        .stream().map(this::mapRoleEntityToRoleDto)
-        .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Role> roles = roleRepository.findAll(pageable);
+
+        List<RoleResponseDto> contents = roles.getContent()
+                .stream()
+                .map(this::mapRoleEntityToRoleResponseDto)
+                .collect(Collectors.toList());
+
+        PageRoleResponse response = new PageRoleResponse();
+        response.setContent(contents);
+        response.setPageNo(roles.getNumber());
+        response.setPageSize(roles.getSize());
+        response.setTotalElements(roles.getTotalElements());
+        response.setTotalPages(roles.getTotalPages());
+        response.setLast(roles.isLast());
+
+        return response;
     }
 
     
     @Override
-    public RoleDto updateRole(RoleDto dto, Long roleId){
+    public RoleResponseDto updateRole(RoleRequestDto roleRequestDto, Long roleId){
 
         Role role = roleRepository.findById(roleId)
         .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
 
-        role.setName(dto.getName());
+        role.setName(roleRequestDto.getName());
 
         Role updatedRole = roleRepository.save(role);
-        return mapRoleEntityToRoleDto(updatedRole);
+        return mapRoleEntityToRoleResponseDto(updatedRole);
     }
 
 
@@ -72,21 +97,17 @@ public class RoleServiceImpl implements RoleService{
     }
 
 
-    private Role mapRoleDtoToRoleEntity(RoleDto roleDto){
+    private Role mapRoleRequestDtoToRoleEntity(RoleRequestDto roleRequestDto){
 
-        Role role = mapper.map(roleDto, Role.class);
-
-        // Role role = new Role();
-        // role.setName(roleDto.getName());
+        Role role = mapper.map(roleRequestDto, Role.class);
          return role;
         
     }
 
 
     
-    private RoleDto mapRoleEntityToRoleDto(Role role){
-      //  return new RoleDto(role.getId(), role.getName());
-      return mapper.map(role, RoleDto.class);
+    private RoleResponseDto mapRoleEntityToRoleResponseDto(Role role){
+      return mapper.map(role, RoleResponseDto.class);
    
 }
 }

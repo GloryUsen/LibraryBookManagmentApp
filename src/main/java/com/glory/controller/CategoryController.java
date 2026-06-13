@@ -1,7 +1,6 @@
 package com.glory.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,10 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.glory.dto.CategoryDto;
+import com.glory.dto.CategoryRequestDto;
+import com.glory.dto.CategoryResponseDto;
+import com.glory.dto.PageCategoryResponse;
 import com.glory.service.CategoryService;
+import com.glory.utils.AppConstants;
 
 
 @RestController
@@ -30,27 +33,33 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto){
-        CategoryDto savedCategory = categoryService.createCategory(categoryDto);
+    public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto categoryDto){
+        CategoryResponseDto savedCategory = categoryService.createCategory(categoryDto);
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getAllCategory (@PathVariable("id") Long categoryId){
-        CategoryDto categoryDto =  categoryService.getCategoryById(categoryId);
-
+    public ResponseEntity<CategoryResponseDto> getAllSingleCategory (@PathVariable("id") Long categoryId){
+        CategoryResponseDto categoryDto =  categoryService.getCategoryById(categoryId);
         return ResponseEntity.ok(categoryDto);
         
     }
 
    @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories(){
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity <PageCategoryResponse> getAllCategories(
+        @RequestParam(value = "PageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int pageNo,
+        @RequestParam(value = "PageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int pageSize,
+        @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_PAGE_SORT_BY) String sortBy,
+        @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_PAGE_DIRECTION) String direction
+ ){
+        
+        return ResponseEntity.ok(categoryService.getAllCategories(pageNo, pageSize, sortBy, direction));
     }
 
+
     @PutMapping("{id}")
-     public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto, @PathVariable("id")  Long categoryId){
+     public ResponseEntity<CategoryResponseDto> updateCategory(@RequestBody CategoryRequestDto categoryDto, @PathVariable("id")  Long categoryId){
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto, categoryId));
         
     }

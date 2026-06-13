@@ -7,9 +7,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.glory.dto.UserDto;
+import com.glory.dto.UserRequestDto;
+import com.glory.dto.UserResponseDto;
+import com.glory.dto.PageUserResponse;
 import com.glory.entity.Role;
 import com.glory.entity.User;
 import com.glory.exception.ResourceNotFoundException;
@@ -31,60 +37,80 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
 
         User user = new User();
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
+        user.setName(userRequestDto.getName());
+        user.setEmail(userRequestDto.getEmail());
+        user.setPassword(userRequestDto.getPassword());
 
-        Role role = roleRepository.findByName(userDto.getRoleName())
-        .orElseThrow(() -> new ResourceNotFoundException("Role", "name", userDto.getRoleName()));
+        Role role = roleRepository.findByName(userRequestDto.getRoleName())
+        .orElseThrow(() -> new ResourceNotFoundException("Role", "name", userRequestDto.getRoleName()));
 
         user.setRole(role);
 
         User savedUser = userRepository.save(user);
 
-        return mapUserEntityToUserDto(savedUser);
+        return mapUserEntityToUserResponseDto(savedUser);
         
     }
 
       @Override
-        public UserDto getByEmail(String email) {
+        public UserResponseDto getByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-        return mapUserEntityToUserDto(user);
+        return mapUserEntityToUserResponseDto(user);
     }
 
 
         
 
             @Override
-        public List<UserDto> getAllUsers() {
-            return userRepository.findAll()
+        public PageUserResponse getAllUsers(int pageNo, int pageSize, String sortBy, String direction) {
+            
+            Sort sort = direction.equalsIgnoreCase("desc")
+                    ? Sort.by(sortBy).descending()
+                    : Sort.by(sortBy).ascending();
+
+            Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+            Page<User> users = userRepository.findAll(pageable);
+
+            List<UserResponseDto> contents = users.getContent()
                     .stream()
-                    .map(this::mapUserEntityToUserDto)
+                    .map(this::mapUserEntityToUserResponseDto)
                     .collect(Collectors.toList());
+
+            PageUserResponse response = new PageUserResponse();
+            response.setContent(contents);
+            response.setPageNo(users.getNumber());
+            response.setPageSize(users.getSize());
+            response.setTotalElements(users.getTotalElements());
+            response.setTotalPages(users.getTotalPages());
+            response.setLast(users.isLast());
+
+            return response;
         }
+
   @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
+    public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
+        user.setName(userRequestDto.getName());
+        user.setEmail(userRequestDto.getEmail());
+        user.setPassword(userRequestDto.getPassword());
 
-        Role role = roleRepository.findByName(userDto.getRoleName())
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", userDto.getRoleName()));
+        Role role = roleRepository.findByName(userRequestDto.getRoleName())
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", userRequestDto.getRoleName()));
 
         user.setRole(role);
 
         User updatedUser = userRepository.save(user);
 
-        return mapUserEntityToUserDto(updatedUser);
+        return mapUserEntityToUserResponseDto(updatedUser);
     }
 
          @Override
@@ -97,15 +123,9 @@ public class UserServiceImpl implements UserService{
     }
 
 
-    private UserDto mapUserEntityToUserDto(User user){
+    private UserResponseDto mapUserEntityToUserResponseDto(User user){
 
-        UserDto dto = mapper.map(user, UserDto.class);
-
-        // UserDto dto = new UserDto();
-        // dto.setId(user.getId());
-        // dto.setName(user.getName());
-        // dto.setEmail(user.getEmail());
-        // dto.setPassword(user.getPassword());
+        UserResponseDto dto = mapper.map(user, UserResponseDto.class);
 
         if(user.getRole() != null){
             dto.setRoleName(user.getRole().getName());

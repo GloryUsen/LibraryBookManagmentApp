@@ -2,17 +2,19 @@ package com.glory.service;
 
 import java.util.List;
 
-import com.glory.dto.CategoryDto;
+import com.glory.dto.CategoryRequestDto;
+import com.glory.dto.CategoryResponseDto;
+import com.glory.dto.PageCategoryResponse;
 
 public interface CategoryService {
 
-    CategoryDto createCategory(CategoryDto categoryDto);
+    CategoryResponseDto createCategory(CategoryRequestDto categoryDto);
 
-    CategoryDto getCategoryById(Long id);
+    CategoryResponseDto getCategoryById(Long id);
 
-    List<CategoryDto> getAllCategories();
+    PageCategoryResponse getAllCategories(int pageNo,int pageSize,String sortBy,String direction);
 
-    CategoryDto updateCategory(CategoryDto categoryDto, Long categoryId);
+    CategoryResponseDto updateCategory(CategoryRequestDto categoryDto, Long categoryId);
 
     void deleteCategory (Long categoryId);
 

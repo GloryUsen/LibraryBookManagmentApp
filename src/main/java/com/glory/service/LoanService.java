@@ -2,17 +2,19 @@ package com.glory.service;
 
 import java.util.List;
 
-import com.glory.dto.LoanDto;
+import com.glory.dto.LoanRequestDto;
+import com.glory.dto.LoanResponseDto;
+import com.glory.dto.PageLoanResponse;
 
 public interface LoanService {
 
-    LoanDto borrowBook(LoanDto loanDto);
+    LoanResponseDto borrowBook(LoanRequestDto loanRequestDto);
 
-    LoanDto getLoanById(Long loanId);
+    LoanResponseDto getLoanById(Long loanId);
 
-    List<LoanDto> getAllLoans();
+    PageLoanResponse getAllLoans(int pageNo, int pageSize, String sortBy, String direction);
 
-    LoanDto returnBook(Long loanId);
+    LoanResponseDto returnBook(Long loanId);
 
     void deleteLoan(Long loanId);
 
