@@ -3,137 +3,171 @@ package com.glory.serviceImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.glory.dto.BookDto;
-import com.glory.dto.CategoryDto;
+import com.glory.dto.BookRequestDto;
+import com.glory.dto.BookResponseDto;
+import com.glory.dto.CategoryRequestDto;
+import com.glory.dto.CategoryResponseDto;
+import com.glory.dto.PageBookResponse;
 import com.glory.entity.Book;
 import com.glory.entity.Category;
+import com.glory.enums.BookStatus;
 import com.glory.exception.ResourceNotFoundException;
 import com.glory.repository.BookRepository;
 import com.glory.repository.CategoryRepository;
 import com.glory.service.BookService;
 
 @Service
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private ModelMapper mapper;
 
-
-    public BookServiceImpl(BookRepository bookRepository, CategoryRepository categoryRepository) {
+    public BookServiceImpl(BookRepository bookRepository, CategoryRepository categoryRepository, ModelMapper mapper) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public BookDto addBook(BookDto bookDto) {
-    Book book = mapBookDtoToEntity(bookDto);
-    Book savedBook = bookRepository.save(book);
+    public BookResponseDto addBook(BookRequestDto bookRequestDto) {
 
-    return mapBookEntityToDto(savedBook);
-
-
-    }
+        Category category = categoryRepository.findById(bookRequestDto.getCategoryId())
+        .orElseThrow(() -> new ResourceNotFoundException("category", "id", bookRequestDto.getCategoryId()));
 
 
-    private BookDto mapDtoToEntity1(BookDto dto){
-
-        Book book = new Book();
-
-        book.setTitle(dto.getTitle());
-        book.setAuthor(dto.getAuthor());
-        book.setIsbn(dto.getIsbn());
-        book.setAvailable(dto.isAvailable());
-        book.setStatus(dto.getStatus());
-
-        if(dto.getCategory() != null){
-            Category category = categoryRepository.findById(dto.getCategory().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
-            book.setCategory(category);
-        }
-
-        return dto;
-}
-
-        private Book mapBookDtoToEntity(BookDto dto){
-
-            Book book = new Book();
-
-            book.setTitle(dto.getTitle());
-            book.setAuthor(dto.getAuthor());
-            book.setIsbn(dto.getIsbn());
-            book.setAvailable(dto.isAvailable());
-            book.setStatus(dto.getStatus());
-
-            if(dto.getCategory() != null){
-                Category category = categoryRepository.findById(dto.getCategory().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
-
-                book.setCategory(category);
-            }
-
-            return book;
-        }
+        Book book = mapBookRequestDtoToEntity(bookRequestDto);
+        book.setCategory(category);
+        Book newBook = bookRepository.save(book);
 
 
 
-
-
-    @Override
-    public List<BookDto> getAllBooks() {
-
-        List<Book> books = bookRepository.findAll();
-        return books.stream()
-          .map(this::mapBookEntityToDto)
-          .collect(Collectors.toList());
+        // BookRequestDto bookResponseDto = mapBookEntityToDto(newBook);
+        return mapBookEntityToBookResponse(newBook);
     }
 
     
 
-        private Book mapDtoToEntity(BookDto dto){
+    @Override
+    public PageBookResponse getAllBooks(int pageNo, int pageSize, String sortBy, String direction) {
 
-            Book books = new Book();
+      Sort sort = direction.equalsIgnoreCase("desc")
+              ? Sort.by(sortBy).descending()
+              : Sort.by(sortBy).ascending();
+      
+      Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-            books.setId(dto.getId());
-            books.setTitle(dto.getTitle());
-            books.setAuthor(dto.getAuthor());
-            books.setIsbn(dto.getIsbn());
-            books.setAvailable(dto.isAvailable());
-            books.setStatus(dto.getStatus());
+        // List<Book> books =  bookRepository.findAll();
+        Page<Book> books = bookRepository.findAllWithCategory(pageable);
 
+        List<Book> listOfBooks = books.getContent();
 
-            if(dto.getCategory() != null){
-                Category category = categoryRepository.findById(dto.getCategory().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category Not Found"));
+             // return books.stream().map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
+            //  return listOfBooks.stream().map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
+             List<BookResponseDto> bookContent = listOfBooks.stream()
+             .map(this::mapBookEntityToBookResponse).collect(Collectors.toList());
 
-                books.setCategory(category);
+             PageBookResponse response = new PageBookResponse();
+             response .setBookContent(bookContent);
+             response.setPageSize(books.getSize());
+             response.setPageNo(books.getNumber());
+             response.setPageElements(books.getTotalElements());
+             response.setTotalPage(books.getTotalPages());
+             response.setLast(books.isLast());
 
+             return response;
             }
 
-            return books;
 
+            
+
+    @Override
+    public BookResponseDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+
+        return mapBookEntityToBookResponse(book);
     }
 
 
 
+    @Override
+    public BookResponseDto updateBook(BookRequestDto bookRequestDto, long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+             book.setTitle(bookRequestDto.getTitle());
+         if (bookRequestDto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(bookRequestDto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category",
+                            "id",
+                            bookRequestDto.getCategoryId()));
+                            book.setCategory(category);
+        }
+                     Book updatedBook = bookRepository.save(book);
+                    return mapBookEntityToBookResponse(updatedBook);
+    }
 
-        private BookDto mapBookEntityToDto(Book book){
 
-        BookDto dto = new BookDto();
 
-        dto.setId(book.getId());
-        dto.setTitle(book.getTitle());
-        dto.setAuthor(book.getAuthor());
-        dto.setIsbn(book.getIsbn());
-        dto.setAvailable(book.isAvailable());
-        dto.setStatus(book.getStatus());
+    @Override
+    public void deleteBookById(long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
 
-        if(book.getCategory() != null){
-            CategoryDto categoryDto = new CategoryDto();
-            categoryDto.setId(book.getCategory().getId());
-            categoryDto.setName(book.getCategory().getName());
-            dto.setCategory(categoryDto);
+        bookRepository.delete(book);
+    }
+
+
+
+    private Book mapBookRequestDtoToEntity(BookRequestDto dto) {
+
+        Book book = mapper.map(dto, Book.class);
+        
+        // Book book = new Book();
+        // book.setTitle(dto.getTitle());
+        // book.setAuthor(dto.getAuthor());
+        // book.setIsbn(dto.getIsbn());
+        // book.setAvailable(true);
+        // book.setStatus(BookStatus.AVAILABLE);
+         if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category",
+                            "id",
+                            dto.getCategoryId()
+));
+                book.setCategory(category);
+        }
+
+        return book;
+    }
+
+
+    private BookResponseDto mapBookEntityToBookResponse(Book book) {
+
+        BookResponseDto dto = mapper.map(book, BookResponseDto.class);
+        // BookResponseDto dto = new BookResponseDto();
+        // dto.setId(book.getId());
+        // dto.setTitle(book.getTitle());
+        // dto.setAuthor(book.getAuthor());
+        // dto.setIsbn(book.getIsbn());
+        // dto.setIsAvailable(book.isAvailable());
+        // dto.setStatus(book.getStatus());
+
+         if (book.getCategory() != null) {
+             CategoryResponseDto categoryDto = new CategoryResponseDto();
+             categoryDto.setId(book.getCategory().getId());
+             categoryDto.setName(book.getCategory().getName());
+             categoryDto.setDescription(book.getCategory().getDescription());
+             dto.setCategory(categoryDto);
         }
 
         return dto;
@@ -141,4 +175,3 @@ public class BookServiceImpl implements BookService{
 
 
 }
-

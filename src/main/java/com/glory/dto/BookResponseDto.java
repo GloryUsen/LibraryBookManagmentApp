@@ -1,46 +1,18 @@
-package com.glory.entity;
+package com.glory.dto;
 
 import com.glory.enums.BookStatus;
 
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "books")
-public class Book {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BookResponseDto {
+
     private Long id;
-
     private String title;
     private String author;
     private String isbn;
-  
-
     private boolean isAvailable;
-
-    @Enumerated(EnumType.STRING)
-    private BookStatus status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-
-    public Book() {
-    }
-
-    public Book(Long id, String title, String author, String isbn,
-                boolean isAvailable, BookStatus status, Category category) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-        this.isAvailable = isAvailable;
-        this.status = status;
-        this.category = category;
-    }
-
+    private BookStatus status; 
+    private CategoryResponseDto category;
 
     public Long getId() {
         return id;
@@ -78,8 +50,8 @@ public class Book {
         return isAvailable;
     }
 
-    public void setAvailable(boolean available) {
-        isAvailable = available;
+    public void setIsAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 
     public BookStatus getStatus() {
@@ -90,13 +62,15 @@ public class Book {
         this.status = status;
     }
 
-    public Category getCategory() {
+    public CategoryResponseDto getCategory() {
         return category;
+
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(CategoryResponseDto category) {
         this.category = category;
     }
 
-  
+
 }
+
